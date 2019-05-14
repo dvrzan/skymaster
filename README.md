@@ -1,5 +1,6 @@
 # skymaster
 Galaxy shooter game created as an assignment for university course.
+Created by Danijela Vrzan & Dino Aljevic.
 
 Suggested web browsers: **Google Chrome** or **Mozilla Firefox**.
 Sound does not work on **Safari**.
