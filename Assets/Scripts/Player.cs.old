@@ -1,0 +1,291 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Player : MonoBehaviour
+{
+    public GameObject laserPrefab;
+    public GameObject explosionPrefab;
+    public GameObject shieldObject;
+    public GameObject[] engines;
+
+    public float fireRate = 0.25f;
+    public float canFire = 0.0f;
+    public bool canTripleShot = false;
+    public bool canSpeedBoost = false;
+    public bool shieldActive = false;
+    public bool isPlayerOne = false;
+    public bool isPlayerTwo = false;
+
+    public float speed = 7.0f;
+    public int life = 3;
+
+    private UIManager uiManager;
+    private GameManager gameManager;
+    private SpawnManager spawnManager;
+    private AudioSource audioSource;
+
+    private int hitCount = 0;
+
+    // Start is called before the first frame update (initialization)
+    public void Start()
+    {
+        uiManager = GameObject.Find("Canvas").GetComponent<UIManager>();
+
+        if (uiManager != null)
+        {
+            uiManager.UpdateLife(life);
+        }
+
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        spawnManager = GameObject.Find("SpawnManager").GetComponent<SpawnManager>();
+
+        /*if (spawnManager != null)
+        {
+            spawnManager.StartSpawn();
+        }
+        */
+
+        audioSource = GetComponent<AudioSource>();
+
+        hitCount = 0;
+
+        if (gameManager.isCoOpMode == false)
+        {
+            //current position = new position
+            transform.position = new Vector3(0, 0, 0);
+        }
+
+    }
+
+    // Update is called once per frame
+    public void Update()
+    {
+        //Player one...
+        if (isPlayerOne == true)
+        {
+            Movement();
+
+            //If space key or mouse pressed spawn a laser at player location, with no rotation
+            if ((Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Mouse0)) && isPlayerOne == true)
+            {
+                Shoot();
+            }
+        }
+
+        if (isPlayerTwo == true)
+        {
+            MovementPlayerTwo();
+            if (Input.GetKeyDown(KeyCode.KeypadEnter) || Input.GetKeyDown(KeyCode.RightShift))
+            {
+                Shoot();
+            }
+        }
+
+        if (gameManager.gameOver == true && ((isPlayerOne == true && isPlayerTwo == false) || (isPlayerOne == false && isPlayerTwo == true)))
+        {
+            Destroy(this.gameObject);
+        }
+    }
+
+    private void Shoot()
+    {
+        if (Time.time > canFire)
+        {
+            audioSource.Play();
+
+            if (canTripleShot == true)
+            {
+                //Middle laser
+                Instantiate(laserPrefab, transform.position + new Vector3(0, 0.97f, 0), Quaternion.identity);
+                //Left laser
+                Instantiate(laserPrefab, transform.position + new Vector3(-0.55f, 0.04f, 0), Quaternion.identity);
+                //Right laser
+                Instantiate(laserPrefab, transform.position + new Vector3(0.55f, 0.04f, 0), Quaternion.identity);
+                canFire = Time.time + fireRate;
+            }
+            else
+            {
+                Instantiate(laserPrefab, transform.position + new Vector3(0, 0.97f, 0), Quaternion.identity);
+                canFire = Time.time + fireRate;
+            }
+        }
+    }
+
+    private void Movement()
+    {
+        float horizontalInput = Input.GetAxis("Horizontal");
+        float verticalInput = Input.GetAxis("Vertical");
+
+        if (canSpeedBoost == true)
+        {
+            transform.Translate(Vector3.right * Time.deltaTime * speed * 2.0f * horizontalInput);
+            transform.Translate(Vector3.up * Time.deltaTime * speed * 2.0f * verticalInput);
+        }
+        else
+        {
+            transform.Translate(Vector3.right * Time.deltaTime * speed * horizontalInput);
+            transform.Translate(Vector3.up * Time.deltaTime * speed * verticalInput);
+        }
+
+        //If player position on the y is greater than 0
+        //Set player position on the y to 0
+        if (transform.position.y > 0)
+        {
+            transform.position = new Vector3(transform.position.x, 0, 0);
+        }
+        else if (transform.position.y < -4.7f)
+        {
+            transform.position = new Vector3(transform.position.x, -4.7f, 0);
+        }
+
+        //If player position on the x is greater than 9.2
+        //Set player position on the x to 9.2
+        if (transform.position.x > 9.2f)
+        {
+            transform.position = new Vector3(9.2f, transform.position.y, 0);
+        }
+        else if (transform.position.x < -9.2f)
+        {
+            transform.position = new Vector3(-9.2f, transform.position.y, 0);
+        }
+    }
+
+    private void MovementPlayerTwo()
+    {
+        if (canSpeedBoost == true)
+        {
+            if (Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.Keypad8))
+            {
+                transform.Translate(Vector3.up * speed * 2.0f * Time.deltaTime);
+            }
+
+            if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.Keypad6))
+            {
+                transform.Translate(Vector3.right * speed * 2.0f * Time.deltaTime);
+            }
+
+            if (Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.Keypad2))
+            {
+                transform.Translate(Vector3.down * speed * 2.0f * Time.deltaTime);
+            }
+
+            if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.Keypad4))
+            {
+                transform.Translate(Vector3.left * speed * 2.0f * Time.deltaTime);
+            }
+        }
+        else
+        {
+            if (Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.Keypad8))
+            {
+                transform.Translate(Vector3.up * speed * Time.deltaTime);
+            }
+
+            if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.Keypad6))
+            {
+                transform.Translate(Vector3.right * speed * Time.deltaTime);
+            }
+
+            if (Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.Keypad2))
+            {
+                transform.Translate(Vector3.down * speed * Time.deltaTime);
+            }
+
+            if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.Keypad4))
+            {
+                transform.Translate(Vector3.left * speed * Time.deltaTime);
+            }
+        }
+
+        //If player position on the y is greater than 0
+        //Set player position on the y to 0
+        if (transform.position.y > 0)
+        {
+            transform.position = new Vector3(transform.position.x, 0, 0);
+        }
+        else if (transform.position.y < -4.7f)
+        {
+            transform.position = new Vector3(transform.position.x, -4.7f, 0);
+        }
+
+        //If player position on the x is greater than 9.2
+        //Set player position on the x to 9.2
+        if (transform.position.x > 9.2f)
+        {
+            transform.position = new Vector3(9.2f, transform.position.y, 0);
+        }
+        else if (transform.position.x < -9.2f)
+        {
+            transform.position = new Vector3(-9.2f, transform.position.y, 0);
+        }
+    }
+
+    public void Damage()
+    {
+
+        //If player has shield on, do nothing - stop this function
+        if (shieldActive == true)
+        {
+            shieldActive = false;
+            shieldObject.SetActive(false);
+            return;
+        }
+
+        hitCount++;
+
+        //Turn left engine failure on
+        if (hitCount == 1)
+        {
+            engines[0].SetActive(true);
+        }
+        //Turn both (right) engines failure on
+        else if (hitCount == 2)
+        {
+            engines[1].SetActive(true);
+        }
+
+        life--;
+        //If subtract one life - update the sprite image too
+        uiManager.UpdateLife(life);
+        //If 0 lives - destroy the player and play the explosion animation
+        if(life < 1)
+        {
+            Instantiate(explosionPrefab, transform.position, Quaternion.identity);
+            gameManager.gameOver = true;
+            uiManager.ShowTitleScreen();
+            uiManager.ShowGameOverText();
+            uiManager.CheckBestScore();
+            Destroy(this.gameObject);
+        }
+    }
+
+    public void TripleShotPowerUpOn()
+    {
+        canTripleShot = true;
+        StartCoroutine(TripleShotExpiration());
+    }
+
+    public void SpeedBoostPowerUpOn()
+    {
+        canSpeedBoost = true;
+        StartCoroutine(SpeedBoostExpiration());
+    }
+
+    public void ShieldPowerUpOn()
+    {
+        shieldActive = true;
+        shieldObject.SetActive(true);
+    }
+
+    public IEnumerator TripleShotExpiration()
+    {
+        yield return new WaitForSeconds(7.0f);
+        canTripleShot = false;
+    }
+    public IEnumerator SpeedBoostExpiration()
+    {
+        yield return new WaitForSeconds(7.0f);
+        canSpeedBoost = false;
+    }
+}

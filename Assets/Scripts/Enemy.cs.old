@@ -1,0 +1,62 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Enemy : MonoBehaviour
+{
+    public GameObject enemyExplosionPrefab;
+
+    public float speed = 4.0f;
+    public float minX = -7.5f;
+    public float maxX = 7.5f;
+
+    //Handler to UIManager script for score to update
+    private UIManager uiManager;
+    public AudioClip audioClip;
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        uiManager = GameObject.Find("Canvas").GetComponent<UIManager>();
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        transform.Translate(Vector3.down * speed * Time.deltaTime);
+
+        float x = Random.Range(minX, maxX);
+
+        if (transform.position.y <= -6.0f)
+        {
+            transform.position = new Vector3(x, 7, 0);
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        Debug.Log("Collided with: " + other.name);
+
+        if (other.tag == "Laser")
+        {
+            Destroy(other.gameObject);
+            Instantiate(enemyExplosionPrefab, transform.position, Quaternion.identity);
+            uiManager.UpdateScore();
+            AudioSource.PlayClipAtPoint(audioClip, Camera.main.transform.position, 0.4f);
+            Destroy(this.gameObject);
+        }
+        else if (other.tag == "Player")
+        {
+            Player player = other.GetComponent<Player>();
+
+            if(player != null)
+            {
+                player.Damage();
+            }
+
+            Instantiate(enemyExplosionPrefab, transform.position, Quaternion.identity);
+            AudioSource.PlayClipAtPoint(audioClip, Camera.main.transform.position, 0.4f);
+            Destroy(this.gameObject);
+        }
+    }
+}
