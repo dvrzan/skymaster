@@ -12,10 +12,13 @@ Skymaster is a fast-paced 2D space shooter game where you test your abilities to
 
 You can play the game [here](https://dvrzan.github.io/skymaster/index.html).
 
+
 ### Web browser support
 
 Suggested web browsers: **Google Chrome** or **Mozilla Firefox**.
-Sound does not work on **Safari**.
+ <br />
+ Sound does not work on **Safari**.
+
 
 ## Concepts used / Features
 
