@@ -10,7 +10,7 @@
 
 Skymaster is a fast-paced 2D space shooter game where you test your abilities to become the next executive officer aboard the Skymaster spaceship. Built using Unity and C#. Features a single and local co-op playing styles, different power-ups to aid you in the battle, and an awesome exploding sounds and graphics.
 
-You can play the game [here](https://dvrzan.github.io/skymaster/index.html).
+>You can play the game [here](https://dvrzan.github.io/skymaster/index.html).
 
 
 ### Web browser support
