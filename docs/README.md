@@ -32,8 +32,8 @@ Suggested web browsers: **Google Chrome** or **Mozilla Firefox**.
  <br />
  <br />
 
->This is a university project created by my colleague Dino Aljevic and me for an Object Oriented Modeling course.</br>
->Check my portfolio at [dvrzan.github.io](https://dvrzan.github.io).
+>This is a university project created by my colleague Dino Aljevic and me for an Object Oriented Modelling course.</br>
+>Check my portfolio at [danijelavrzan.com](https://danijelavrzan.com).
 
  <br />
 
